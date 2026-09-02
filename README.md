@@ -10,7 +10,9 @@ elder, scribe, guru, master, monitor.
 
 ## Running it
 
-Open `pass-the-spark.html` in any browser. No build step, no server, no
+Live at **https://p5yd.github.io/pass-the-spark/** — open it in any browser.
+
+Or open `pass-the-spark.html` locally. No build step, no server, no
 dependencies. Works offline apart from the Google Fonts link.
 
 | Control | Action |
@@ -44,9 +46,12 @@ Best on a projector in a dimmed room — the deck is a single dark theme by desi
 - Single file: markup, CSS and JS all live in `pass-the-spark.html`.
 - Slide 8's wall persists to `localStorage` on the presenting machine only.
   The **Clear the wall** button resets it between classes.
-- The file is also the source for a published Claude Artifact, which is why it
-  has no `<!doctype>`/`<html>`/`<body>` wrapper — the publisher supplies those.
-  Browsers insert them automatically, so opening the file directly works fine.
+- `pass-the-spark.html` is the canonical file, and doubles as the source for a
+  published Claude Artifact — which is why it has no `<!doctype>`/`<html>`/
+  `<body>` wrapper. The publisher supplies those.
+- `index.html` is generated from it by `./build.sh`, which adds that wrapper
+  plus page metadata so GitHub Pages can serve it. **Run `./build.sh` after
+  every edit to the source and commit both files**, or the live site drifts.
 
 ## Licence
 

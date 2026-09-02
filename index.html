@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="An interactive 45-minute lesson for Grade 4 introducing teaching as something people have done around fires, in kitchens and on screens for thirty thousand years.">
+<meta name="theme-color" content="#15112A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pass the Spark">
+<meta property="og:description" content="A 45-minute animated lesson for nine- and ten-year-olds about the people who pass knowledge on. Nine slides, questions, and a partner challenge.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E">
+<style>*{margin:0;padding:0}</style>
+</head>
+<body>
+<title>Pass the Spark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,700..900,0..100,0..1&family=Nunito:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap">
+
+<style>
+:root{
+  --night:#15112A;
+  --night-2:#1B1535;
+  --raised:#241C44;
+  --raised-2:#2E2456;
+  --ember:#FF9B45;
+  --flame:#FFD166;
+  --glow:#5FE3CE;
+  --coral:#FF7C90;
+  --cream:#FFF2E0;
+  --muted:#A497C9;
+  --line:rgba(164,151,201,.24);
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+  --mono:"Space Mono",ui-monospace,Menlo,monospace;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--night);
+  color:var(--cream);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+h1,h2,h3{font-family:var(--display);font-weight:900;line-height:1.02;text-wrap:balance;margin:0;font-variation-settings:"SOFT" 60,"WONK" 1}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--flame);outline-offset:3px;border-radius:8px}
+
+/* ---------- ambient ---------- */
+#embers{position:fixed;inset:0;z-index:0;pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 118%,rgba(255,155,69,.20),rgba(255,155,69,0) 55%),
+             radial-gradient(100% 100% at 50% 0%,rgba(95,227,206,.07),transparent 60%);}
+
+/* ---------- stage ---------- */
+.stage{position:fixed;inset:0;z-index:2}
+.slide{
+  position:absolute;inset:0;
+  display:grid;place-items:center;
+  padding:clamp(20px,4vw,56px) clamp(18px,5vw,64px) 110px;
+  overflow-y:auto;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(20px);
+  transition:opacity .45s ease,transform .55s cubic-bezier(.2,.7,.3,1),visibility 0s .5s;
+}
+.slide.active{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.3,1),visibility 0s}
+.wrap{width:min(1040px,100%);margin:auto}
+.wrap.narrow{width:min(780px,100%)}
+.center{text-align:center}
+
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.slide.active .rise{animation:rise .6s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(var(--d,0)*95ms)}
+
+/* ---------- type ---------- */
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ember)}
+.eyebrow.cool{color:var(--glow)}
+.big{font-size:clamp(2.1rem,5.6vw,4.1rem)}
+.mid{font-size:clamp(1.7rem,3.9vw,2.7rem)}
+.lead{font-size:clamp(1.05rem,1.85vw,1.35rem);color:var(--cream);opacity:.92;max-width:60ch}
+.center .lead{margin-inline:auto}
+.small{font-size:.95rem;color:var(--muted)}
+.hl{color:var(--flame)}
+.hl-cool{color:var(--glow)}
+.stack{display:flex;flex-direction:column;gap:clamp(14px,2.2vw,22px)}
+.stack.tight{gap:10px}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 26px;border-radius:999px;
+  background:linear-gradient(180deg,var(--flame),var(--ember));
+  color:#2A1405;font-weight:800;font-size:1.02rem;
+  box-shadow:0 10px 30px -10px rgba(255,155,69,.7);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 36px -12px rgba(255,155,69,.85)}
+.btn.ghost{background:none;color:var(--cream);border:2px solid var(--line);box-shadow:none;font-weight:600}
+.btn.ghost:hover{border-color:var(--ember);color:var(--flame)}
+.btn.cool{background:linear-gradient(180deg,#8CF0E0,var(--glow));color:#06322C;box-shadow:0 10px 30px -12px rgba(95,227,206,.7)}
+
+/* ---------- cards / choices ---------- */
+.grid{display:grid;gap:clamp(12px,1.6vw,18px)}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:860px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+.tile{
+  position:relative;text-align:left;
+  padding:20px 20px 18px;border-radius:var(--r);
+  background:linear-gradient(180deg,var(--raised),var(--night-2));
+  border:1.5px solid var(--line);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.tile:hover{transform:translateY(-4px);border-color:var(--ember);box-shadow:0 18px 40px -22px rgba(255,155,69,.9)}
+.tile .ic{color:var(--ember);margin-bottom:10px;display:block}
+.tile h3{font-size:1.15rem;margin-bottom:4px}
+.tile p{font-size:.94rem;color:var(--muted)}
+.tile[aria-pressed="true"]{border-color:var(--flame);background:linear-gradient(180deg,#3A2A4E,#241C44)}
+.tile[aria-pressed="true"]::after{
+  content:"";position:absolute;top:12px;right:12px;width:12px;height:12px;border-radius:50%;
+  background:var(--flame);box-shadow:0 0 16px var(--flame);
+}
+
+/* flip cards */
+.flip{display:block;perspective:1200px;background:none;border:none;padding:0;--fh:clamp(176px,26vh,236px);min-height:var(--fh)}
+.flip-in{display:block;position:relative;width:100%;height:100%;min-height:var(--fh);transition:transform .6s cubic-bezier(.3,.8,.3,1);transform-style:preserve-3d}
+.flip[aria-pressed="true"] .flip-in{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;
+  border-radius:var(--r);padding:20px;
+  display:flex;flex-direction:column;justify-content:space-between;text-align:left;
+  border:1.5px solid var(--line);
+  background:linear-gradient(180deg,var(--raised),var(--night-2));
+}
+.face.back{transform:rotateY(180deg);background:linear-gradient(180deg,#3C2740,#251A3C);border-color:rgba(255,155,69,.55);justify-content:flex-start;gap:12px}
+.face .role{font-family:var(--display);font-weight:900;font-size:1.5rem;color:var(--flame);line-height:1.05}
+.face .scene{font-weight:800;font-size:1.06rem}
+.face .hint{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.face .txt{display:block;font-size:.93rem;color:var(--cream);opacity:.9}
+.flip:hover .face{border-color:var(--ember)}
+
+/* ---------- rail ---------- */
+.rail{position:fixed;left:0;right:0;bottom:0;z-index:5;
+  display:flex;align-items:center;gap:16px;
+  padding:14px clamp(16px,4vw,34px);
+  background:linear-gradient(180deg,rgba(21,17,42,0),rgba(21,17,42,.92) 42%);
+}
+.dots{display:flex;gap:9px;flex:1;align-items:center;flex-wrap:wrap}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(164,151,201,.3);transition:all .3s ease;padding:0}
+.dot:hover{background:var(--muted);transform:scale(1.25)}
+.dot.on{background:var(--ember);box-shadow:0 0 14px var(--ember);width:26px;border-radius:999px}
+.dot.done{background:rgba(255,155,69,.5)}
+.navbtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;color:var(--cream);transition:all .2s ease;flex:none}
+.navbtn:hover{border-color:var(--ember);color:var(--flame);transform:scale(1.06)}
+.navbtn[disabled]{opacity:.28;cursor:default;transform:none}
+.counter{font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:.1em;flex:none}
+
+/* ---------- timeline ---------- */
+.tl{position:relative;padding-top:8px}
+.tl-line{position:absolute;left:0;right:0;top:64px;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,rgba(255,155,69,.15),rgba(255,155,69,.65) 45%,rgba(95,227,206,.75));}
+.tl-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;position:relative}
+.era{display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 2px;background:none;border:none}
+.era .stamp{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--muted);text-align:center;min-height:2.4em;line-height:1.25}
+.era .orb{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:var(--night-2);border:2px solid var(--line);color:var(--muted);
+  transition:all .28s cubic-bezier(.3,.8,.3,1)}
+.era .name{font-family:var(--display);font-weight:700;font-size:.98rem;text-align:center;color:var(--muted);transition:color .25s ease}
+.era:hover .orb{transform:scale(1.1);border-color:var(--ember);color:var(--flame)}
+.era[aria-pressed="true"] .orb{background:linear-gradient(180deg,var(--flame),var(--ember));color:#2A1405;border-color:var(--flame);box-shadow:0 0 30px -4px var(--ember);transform:scale(1.14)}
+.era[aria-pressed="true"] .name,.era[aria-pressed="true"] .stamp{color:var(--cream)}
+@media (max-width:700px){
+  .tl-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .tl-line{display:none}
+}
+.era-panel{
+  margin-top:26px;border-radius:var(--r);padding:22px 24px;
+  border:1.5px solid rgba(255,155,69,.4);
+  background:linear-gradient(120deg,rgba(60,39,64,.9),rgba(36,28,68,.9));
+  display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
+}
+.era-panel .lamp{color:var(--flame);flex:none}
+.era-panel h3{font-size:1.35rem;margin-bottom:2px}
+.era-panel .light{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--glow);display:block;margin-bottom:8px}
+.era-panel p{font-size:1.02rem;opacity:.94}
+.era-panel .word{margin-top:12px;display:inline-block;font-family:var(--mono);font-size:.78rem;
+  border:1px dashed rgba(255,209,102,.6);color:var(--flame);padding:6px 12px;border-radius:999px}
+@media (max-width:560px){.era-panel{grid-template-columns:1fr}}
+
+/* ---------- quiz ---------- */
+.opt{
+  text-align:left;padding:22px;border-radius:var(--r);
+  border:1.5px solid var(--line);background:linear-gradient(180deg,var(--raised),var(--night-2));
+  transition:transform .2s ease,border-color .2s ease;position:relative;
+}
+.opt:hover{transform:translateY(-3px);border-color:var(--ember)}
+.opt .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;color:var(--muted);display:block;margin-bottom:10px}
+.opt q{font-size:1.08rem;line-height:1.5;display:block;quotes:none}
+.opt q::before,.opt q::after{content:none}
+.opt.right{border-color:var(--glow);box-shadow:0 0 0 3px rgba(95,227,206,.18)}
+.opt.wrong{border-color:var(--coral);opacity:.62}
+.verdict{margin-top:22px;border-radius:14px;padding:18px 20px;border:1.5px solid var(--line);background:rgba(36,28,68,.7)}
+.verdict.good{border-color:var(--glow)}
+.verdict.soft{border-color:var(--coral)}
+.verdict b{color:var(--flame)}
+.hidden{display:none}
+
+/* ---------- moves ---------- */
+.move{padding:22px 20px;border-radius:var(--r);border:1.5px solid var(--line);
+  background:linear-gradient(180deg,var(--raised),var(--night-2));position:relative;overflow:hidden}
+.move .num{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;color:var(--ember)}
+.move h3{font-size:1.28rem;margin:8px 0 6px}
+.move p{font-size:.95rem;color:var(--muted)}
+.move::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ember);opacity:.85}
+.move:nth-child(2)::before{background:var(--flame)}
+.move:nth-child(3)::before{background:var(--coral)}
+.move:nth-child(4)::before{background:var(--glow)}
+
+/* ---------- timer ---------- */
+.timer-wrap{display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.2vh,18px)}
+.ring{position:relative;width:clamp(136px,29vh,224px);max-width:62vw;aspect-ratio:1}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{stroke:rgba(164,151,201,.2)}
+.ring .prog{stroke:var(--ember);stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s ease}
+.ring .read{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:clamp(2rem,11vh,3.4rem);color:var(--cream);font-variant-numeric:tabular-nums}
+.topic{min-height:2.6em;display:grid;place-items:center;text-align:center;margin-inline:auto;
+  font-family:var(--display);font-weight:700;font-size:clamp(1.15rem,2.9vw,1.8rem);color:var(--flame);max-width:30ch}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- sticky wall ---------- */
+.compose{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.compose input{
+  flex:1 1 340px;max-width:520px;padding:14px 18px;border-radius:999px;
+  background:var(--night-2);border:1.5px solid var(--line);color:var(--cream);font:inherit;
+}
+.compose input::placeholder{color:rgba(164,151,201,.75)}
+.compose input:focus{outline:none;border-color:var(--flame)}
+.wall{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:26px;min-height:120px}
+.note{
+  padding:16px 18px;border-radius:6px;max-width:230px;
+  font-weight:800;font-size:1rem;color:#221226;
+  box-shadow:0 12px 26px -14px rgba(0,0,0,.9);
+  animation:pop .45s cubic-bezier(.2,1.4,.4,1) both;
+}
+@keyframes pop{from{opacity:0;transform:scale(.6) rotate(0deg)}}
+.note small{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:6px}
+.empty-wall{color:var(--muted);font-size:.95rem;align-self:center}
+
+/* ---------- finale ---------- */
+.finale h1{font-size:clamp(2.4rem,7vw,5rem)}
+.torch{display:flex;justify-content:center;gap:clamp(10px,3vw,34px);margin:10px 0 4px;flex-wrap:wrap}
+.torch span{width:clamp(26px,5vw,44px);color:var(--muted);opacity:.25}
+.torch span svg{display:block;width:100%;height:auto}
+.slide.active .torch span{animation:light .5s ease both}
+.slide.active .torch span:nth-child(1){animation-delay:.3s}
+.slide.active .torch span:nth-child(2){animation-delay:.55s}
+.slide.active .torch span:nth-child(3){animation-delay:.8s}
+.slide.active .torch span:nth-child(4){animation-delay:1.05s}
+.slide.active .torch span:nth-child(5){animation-delay:1.3s}
+.slide.active .torch span:nth-child(6){animation-delay:1.55s}
+.slide.active .torch span:nth-child(7){animation-delay:1.8s}
+@keyframes light{to{opacity:1;color:var(--flame);filter:drop-shadow(0 0 14px rgba(255,209,102,.85))}}
+
+/* ---------- facilitator drawer ---------- */
+.notes-btn{position:fixed;top:16px;right:16px;z-index:7;padding:9px 16px;border-radius:999px;
+  border:1.5px solid var(--line);font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);background:rgba(21,17,42,.85)}
+.notes-btn:hover{border-color:var(--ember);color:var(--flame)}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);z-index:9;
+  background:var(--night-2);border-left:1.5px solid var(--line);
+  transform:translateX(101%);transition:transform .4s cubic-bezier(.3,.8,.3,1);
+  overflow-y:auto;padding:26px clamp(20px,3vw,32px) 60px;
+}
+.drawer.open{transform:none}
+.drawer h2{font-size:1.6rem;margin-bottom:4px}
+.drawer h3{font-family:var(--body);font-weight:800;font-size:1rem;color:var(--flame);margin-top:22px}
+.drawer p,.drawer li{font-size:.93rem;color:var(--cream);opacity:.9}
+.drawer ul{padding-left:18px;margin:8px 0;display:flex;flex-direction:column;gap:6px}
+.plan{display:flex;flex-direction:column;gap:2px;margin-top:10px}
+.plan-row{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
+.plan-row .t{font-family:var(--mono);font-size:.72rem;color:var(--ember);padding-top:2px}
+.plan-row b{display:block;font-size:.95rem}
+.plan-row span{font-size:.86rem;color:var(--muted)}
+.scrim{position:fixed;inset:0;z-index:8;background:rgba(10,7,22,.6);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.scrim.on{opacity:1;pointer-events:auto}
+.kbd{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  .slide{transition:opacity .001ms}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <defs>
+  <symbol id="i-flame" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c3.2 3.7 5 6 5 9a5 5 0 0 1-10 0c0-3 1.8-5.3 5-9Z"/><path d="M12 12.2c1.2 1.4 1.9 2.2 1.9 3.2a1.9 1.9 0 0 1-3.8 0c0-1 .7-1.8 1.9-3.2Z"/></g></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3.5l9 7V21H3z"/><path d="M9.5 21v-6h5v6"/></g></symbol>
+  <symbol id="i-group" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8" r="3"/><path d="M3 20c0-3.1 2.4-5.5 5.5-5.5S14 16.9 14 20"/><circle cx="17" cy="9.5" r="2.3"/><path d="M15.5 14.6c3-.4 5.5 1.7 5.5 4.7"/></g></symbol>
+  <symbol id="i-ball" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.6 9.4c5 1.7 11.8 1.7 16.8 0"/><path d="M8.3 3.9c-2 5.2-2 11 0 16.2"/><path d="M15.7 3.9c2 5.2 2 11 0 16.2"/></g></symbol>
+  <symbol id="i-screen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="12.5" rx="2"/><path d="M9 20.5h6M12 16.5v4"/><path d="m10.6 8.4 3.9 2.4-3.9 2.4z"/></g></symbol>
+  <symbol id="i-bowl" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12h17a8.5 8.5 0 0 1-17 0Z"/><path d="M16 3.5 12.8 9.6"/><path d="M2.5 20.5h19"/></g></symbol>
+  <symbol id="i-board" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 13.2c-1.1-1.7-.3-3.4 1.6-3.4h14c1.9 0 2.7 1.7 1.6 3.4"/><path d="M4.6 11.8h14.8"/><circle cx="8.2" cy="16.6" r="1.6"/><circle cx="15.8" cy="16.6" r="1.6"/><path d="M8.2 13.4v1.6M15.8 13.4v1.6"/></g></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8.5"/><path d="M12 14.5c-4.2 0-6.5-2.2-6.5-5.6 3.5 0 6.5 1.9 6.5 5.6Z"/><path d="M12 12.5c0-3.7 2.2-5.9 5.9-5.9 0 3.7-2.2 5.9-5.9 5.9Z"/></g></symbol>
+  <symbol id="i-arch" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 20.5h19"/><path d="M5 20.5V10M9.7 20.5V10M14.3 20.5V10M19 20.5V10"/><path d="M2.2 10 12 3.5l9.8 6.5z"/></g></symbol>
+  <symbol id="i-tablet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.8" width="14" height="18.4" rx="2.5"/><path d="M8.8 8h6.4M8.8 12h6.4M8.8 16h3.4"/></g></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2a6.8 6.8 0 0 1 6.7 7.9A4.9 4.9 0 0 1 12 15a4.9 4.9 0 0 1-6.7-3.9A6.8 6.8 0 0 1 12 3.2Z"/><path d="M12 15v6"/><path d="M8.8 21h6.4"/></g></symbol>
+  <symbol id="i-hammer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m14.6 3.4 6 6-2.6 2.6-6-6z"/><path d="M11.6 9.6 4 17.2 6.8 20l7.6-7.6"/></g></symbol>
+  <symbol id="i-school" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4.2 21 10v11H3z"/><path d="M10 21v-5.5h4V21"/><path d="M12 4.2V1.8h3.6v2.2H12"/></g></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 1.8 14.3 9 21.5 12 14.3 15 12 22.2 9.7 15 2.5 12 9.7 9z" fill="currentColor"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 4.5 7.5 12 15 19.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 4.5 16.5 12 9 19.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ </defs>
+</svg>
+
+<canvas id="embers" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<button class="notes-btn" id="notesBtn" aria-expanded="false">Grown-up notes</button>
+<div class="scrim" id="scrim"></div>
+
+<main class="stage" id="stage">
+
+ <!-- 0 -->
+ <section class="slide active" data-title="Opening">
+  <div class="wrap narrow center stack">
+   <span class="ic rise" style="--d:0;color:var(--flame);display:block"><svg width="64" height="64" aria-hidden="true"><use href="#i-flame"/></svg></span>
+   <p class="eyebrow rise" style="--d:1">A 45-minute journey &middot; Grade 4</p>
+   <h1 class="big rise" style="--d:2">Pass the Spark</h1>
+   <p class="lead rise" style="--d:3">Somebody once showed you how to tie your shoes. Somebody showed <em>them</em>. That chain goes back <span class="hl">thirty thousand years</span> &mdash; and today it runs straight through you.</p>
+   <div class="rise" style="--d:4"><button class="btn" data-next>Light it up<svg width="18" height="18" aria-hidden="true"><use href="#i-right"/></svg></button></div>
+   <p class="small rise" style="--d:5">Use <span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> to move through the deck</p>
+  </div>
+ </section>
+
+ <!-- 1 -->
+ <section class="slide" data-title="Warm-up">
+  <div class="wrap stack">
+   <div class="center stack tight">
+    <p class="eyebrow rise" style="--d:0">Question 1</p>
+    <h2 class="mid rise" style="--d:1">Think of one thing you're good at.<br>Who showed you?</h2>
+    <p class="lead center rise" style="--d:2">Riding a bike. Braiding hair. Beating a level. Frying an egg. Pick your thing, then tap where it came from.</p>
+   </div>
+   <div class="grid g4 rise" style="--d:3" id="q1">
+    <button class="tile" aria-pressed="false"><span class="ic"><svg width="30" height="30" aria-hidden="true"><use href="#i-home"/></svg></span><h3>Someone at home</h3><p>A parent, a grandparent, a big sister</p></button>
+    <button class="tile" aria-pressed="false"><span class="ic"><svg width="30" height="30" aria-hidden="true"><use href="#i-group"/></svg></span><h3>A friend</h3><p>Or the kid one year older than you</p></button>
+    <button class="tile" aria-pressed="false"><span class="ic"><svg width="30" height="30" aria-hidden="true"><use href="#i-ball"/></svg></span><h3>Someone at a club</h3><p>A coach, a leader, a helper</p></button>
+    <button class="tile" aria-pressed="false"><span class="ic"><svg width="30" height="30" aria-hidden="true"><use href="#i-screen"/></svg></span><h3>Someone on a screen</h3><p>A stranger who filmed it for you</p></button>
+   </div>
+   <div class="verdict good hidden center" id="q1out"><p class="lead center" style="max-width:52ch">Notice what nobody picked: <b>&ldquo;nobody.&rdquo;</b> Every skill in this room was handed to you by a person who decided to slow down and show you.</p></div>
+  </div>
+ </section>
+
+ <!-- 2 -->
+ <section class="slide" data-title="Spot the guide">
+  <div class="wrap stack">
+   <div class="center stack tight">
+    <p class="eyebrow rise" style="--d:0">Question 2 &middot; Tap each card</p>
+    <h2 class="mid rise" style="--d:1">Somebody is passing something on in every one of these.</h2>
+    <p class="lead center rise" style="--d:2">None of them are standing at a whiteboard. Guess who the guide is, then flip the card.</p>
+   </div>
+   <div class="grid g3 rise" style="--d:3" id="flips">
+    <button class="flip" aria-pressed="false"><span class="flip-in">
+      <span class="face"><span class="ic" style="color:var(--ember)"><svg width="32" height="32" aria-hidden="true"><use href="#i-bowl"/></svg></span><span class="scene">Flour on the counter, a bowl too big for you.</span><span class="hint">Tap to flip</span></span>
+      <span class="face back"><span class="role">The Cook</span><span class="txt">Grandpa never says &ldquo;watch me.&rdquo; He just kneads slower, so your eyes can keep up.</span></span>
+    </span></button>
+    <button class="flip" aria-pressed="false"><span class="flip-in">
+      <span class="face"><span class="ic" style="color:var(--ember)"><svg width="32" height="32" aria-hidden="true"><use href="#i-board"/></svg></span><span class="scene">The skatepark, right after you eat concrete.</span><span class="hint">Tap to flip</span></span>
+      <span class="face back"><span class="role">The Older Kid</span><span class="txt">She lands the trick, then does it again in slow motion just for you. That is a lesson.</span></span>
+    </span></button>
+    <button class="flip" aria-pressed="false"><span class="flip-in">
+      <span class="face"><span class="ic" style="color:var(--ember)"><svg width="32" height="32" aria-hidden="true"><use href="#i-sprout"/></svg></span><span class="scene">A muddy garden bed and one packet of seeds.</span><span class="hint">Tap to flip</span></span>
+      <span class="face back"><span class="role">The Grower</span><span class="txt">He puts the seed in <em>your</em> hand instead of planting it himself. Harder for him. Better for you.</span></span>
+    </span></button>
+    <button class="flip" aria-pressed="false"><span class="flip-in">
+      <span class="face"><span class="ic" style="color:var(--ember)"><svg width="32" height="32" aria-hidden="true"><use href="#i-arch"/></svg></span><span class="scene">A museum hall with a 12-metre skeleton in it.</span><span class="hint">Tap to flip</span></span>
+      <span class="face back"><span class="role">The Guide</span><span class="txt">She asks &ldquo;what do you think it ate?&rdquo; <em>before</em> she tells you &mdash; so you look harder.</span></span>
+    </span></button>
+    <button class="flip" aria-pressed="false"><span class="flip-in">
+      <span class="face"><span class="ic" style="color:var(--ember)"><svg width="32" height="32" aria-hidden="true"><use href="#i-screen"/></svg></span><span class="scene">A 90-second video filmed on a kitchen table.</span><span class="hint">Tap to flip</span></span>
+      <span class="face back"><span class="role">The Creator</span><span class="txt">One person, one phone, one trick explained well &mdash; and millions of people can suddenly do it.</span></span>
+    </span></button>
+    <button class="flip" aria-pressed="false"><span class="flip-in">
+      <span class="face"><span class="ic" style="color:var(--ember)"><svg width="32" height="32" aria-hidden="true"><use href="#i-ball"/></svg></span><span class="scene">The sideline, two minutes before the whistle.</span><span class="hint">Tap to flip</span></span>
+      <span class="face back"><span class="role">The Coach</span><span class="txt">He never touches the ball in the game. He builds the people who do.</span></span>
+    </span></button>
+   </div>
+  </div>
+ </section>
+
+ <!-- 3 -->
+ <section class="slide" data-title="Across time">
+  <div class="wrap stack">
+   <div class="center stack tight">
+    <p class="eyebrow rise" style="--d:0">The long chain</p>
+    <h2 class="mid rise" style="--d:1">Every classroom in history had a light on.</h2>
+    <p class="lead center rise" style="--d:2">The room changed. The light changed. The job never did. Tap a light to visit it.</p>
+   </div>
+   <div class="tl rise" style="--d:3">
+    <div class="tl-line" aria-hidden="true"></div>
+    <div class="tl-row" id="eras">
+     <button class="era" aria-pressed="true"><span class="stamp">30,000<br>years ago</span><span class="orb"><svg width="26" height="26" aria-hidden="true"><use href="#i-flame"/></svg></span><span class="name">Firelight</span></button>
+     <button class="era" aria-pressed="false"><span class="stamp">5,000<br>years ago</span><span class="orb"><svg width="26" height="26" aria-hidden="true"><use href="#i-tablet"/></svg></span><span class="name">Sun on clay</span></button>
+     <button class="era" aria-pressed="false"><span class="stamp">2,500<br>years ago</span><span class="orb"><svg width="26" height="26" aria-hidden="true"><use href="#i-tree"/></svg></span><span class="name">Shade</span></button>
+     <button class="era" aria-pressed="false"><span class="stamp">700<br>years ago</span><span class="orb"><svg width="26" height="26" aria-hidden="true"><use href="#i-hammer"/></svg></span><span class="name">Lamplight</span></button>
+     <button class="era" aria-pressed="false"><span class="stamp">150<br>years ago</span><span class="orb"><svg width="26" height="26" aria-hidden="true"><use href="#i-school"/></svg></span><span class="name">One window</span></button>
+     <button class="era" aria-pressed="false"><span class="stamp">Right<br>now</span><span class="orb"><svg width="26" height="26" aria-hidden="true"><use href="#i-screen"/></svg></span><span class="name">Screen glow</span></button>
+    </div>
+    <div class="era-panel" id="eraPanel">
+     <span class="lamp"><svg width="46" height="46" aria-hidden="true"><use href="#i-flame" id="eraIcon"/></svg></span>
+     <div>
+      <span class="light" id="eraLight">Light source &middot; a fire</span>
+      <h3 id="eraTitle">A cave wall, and a circle of faces</h3>
+      <p id="eraText">Before writing existed, the oldest person in the group drew the hunt on the wall and told the story again and again until the youngest could tell it back. Getting it wrong could cost the group its dinner.</p>
+      <span class="word" id="eraWord">They were called: the Elder</span>
+     </div>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <!-- 4 -->
+ <section class="slide" data-title="Which one helps?">
+  <div class="wrap stack">
+   <div class="center stack tight">
+    <p class="eyebrow rise" style="--d:0">Question 3 &middot; Pick one</p>
+    <h2 class="mid rise" style="--d:1">Your friend's paper plane keeps nose-diving.</h2>
+    <p class="lead center rise" style="--d:2">Two people try to help. Only one of them actually does.</p>
+   </div>
+   <div class="grid g2 rise" style="--d:3" id="quiz">
+    <button class="opt" data-good="false"><span class="tag">Helper A</span><q>Just fold it better and throw it harder. It's easy.</q></button>
+    <button class="opt" data-good="true"><span class="tag">Helper B</span><q>Make the wings sharper &mdash; press hard, like this. Hold it here. Now throw it level, not up. Go on, try it &mdash; what did it do?</q></button>
+   </div>
+   <div class="verdict hidden" id="quizOut"></div>
+  </div>
+ </section>
+
+ <!-- 5 -->
+ <section class="slide" data-title="The four moves">
+  <div class="wrap stack">
+   <div class="center stack tight">
+    <p class="eyebrow rise" style="--d:0">The secret recipe</p>
+    <h2 class="mid rise" style="--d:1">Four moves. That's the whole job.</h2>
+    <p class="lead center rise" style="--d:2">Coaches use them. Cooks use them. So does the person who filmed your favourite tutorial.</p>
+   </div>
+   <div class="grid g4">
+    <div class="move rise" style="--d:3"><span class="num">MOVE 01</span><h3>Show it</h3><p>Do the thing where they can actually see your hands. Slower than feels normal.</p></div>
+    <div class="move rise" style="--d:4"><span class="num">MOVE 02</span><h3>Shrink it</h3><p>Chop the big scary thing into steps small enough to win at.</p></div>
+    <div class="move rise" style="--d:5"><span class="num">MOVE 03</span><h3>Hand it over</h3><p>Let them try. Let them mess it up. That mess is where the learning actually happens.</p></div>
+    <div class="move rise" style="--d:6"><span class="num">MOVE 04</span><h3>Check it stuck</h3><p>Ask them to show <em>you</em>. If they can't yet, that's your next step &mdash; not their fault.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <!-- 6 -->
+ <section class="slide" data-title="30-second pass">
+  <div class="wrap narrow center stack">
+   <p class="eyebrow rise" style="--d:0">Your turn &middot; Partners</p>
+   <h2 class="mid rise" style="--d:1">Thirty seconds. Pass one thing on.</h2>
+   <p class="lead center rise" style="--d:2">Spin a topic. Partner A goes first &mdash; use all four moves. Then swap.</p>
+   <div class="topic rise" style="--d:3" id="topic"><span id="topicText">Hit <b class="hl">Spin</b> for your challenge</span></div>
+   <div class="timer-wrap rise" style="--d:4">
+    <div class="ring">
+     <svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="9"/>
+      <circle class="prog" id="prog" cx="60" cy="60" r="52" fill="none" stroke-width="9" stroke-dasharray="326.7" stroke-dashoffset="0"/>
+     </svg>
+     <div class="read" id="read" role="timer" aria-live="off">30</div>
+    </div>
+    <div class="row">
+     <button class="btn ghost" id="spin">Spin a topic</button>
+     <button class="btn" id="go">Start 30 seconds</button>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <!-- 7 -->
+ <section class="slide" data-title="The wall">
+  <div class="wrap stack">
+   <div class="center stack tight">
+    <p class="eyebrow rise" style="--d:0">Question 4 &middot; Say it out loud, then type it</p>
+    <h2 class="mid rise" style="--d:1">&ldquo;I could show someone how to&hellip;&rdquo;</h2>
+    <p class="lead center rise" style="--d:2">Anything counts. Whistle. Fold a fitted sheet. Calm a nervous dog. Add it to the wall.</p>
+   </div>
+   <form class="compose rise" style="--d:3" id="wallForm">
+    <input id="wallInput" maxlength="60" autocomplete="off" placeholder="&hellip;skip a stone so it bounces four times" aria-label="Something you could show someone how to do">
+    <button class="btn cool" type="submit">Add to the wall</button>
+   </form>
+   <div class="wall" id="wall"><p class="empty-wall">The wall is empty. Somebody go first.</p></div>
+   <p class="center"><button class="btn ghost" id="clearWall" style="padding:8px 16px;font-size:.85rem">Clear the wall</button></p>
+  </div>
+ </section>
+
+ <!-- 8 -->
+ <section class="slide finale" data-title="Closing">
+  <div class="wrap narrow center stack">
+   <div class="torch rise" style="--d:0" aria-hidden="true">
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+    <span><svg width="100%" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+   </div>
+   <p class="eyebrow cool rise" style="--d:1">Where this leaves you</p>
+   <h1 class="rise" style="--d:2">You're already<br>one of them.</h1>
+   <p class="lead rise" style="--d:3">Not one day. <span class="hl">This week.</span> Somebody near you is going to learn something because you slowed down and showed them &mdash; a game, a word, a shortcut, a kindness.</p>
+   <p class="lead rise" style="--d:4"><span class="hl-cool">Thirty thousand years of people did this for you. Your turn to pass it on.</span></p>
+   <div class="row rise" style="--d:5">
+    <button class="btn" id="restart">Start again</button>
+   </div>
+  </div>
+ </section>
+
+</main>
+
+<nav class="rail" aria-label="Slide navigation">
+ <button class="navbtn" id="prev" aria-label="Previous"><svg width="20" height="20" aria-hidden="true"><use href="#i-left"/></svg></button>
+ <div class="dots" id="dots"></div>
+ <span class="counter" id="counter">01 / 09</span>
+ <button class="navbtn" id="next" aria-label="Next"><svg width="20" height="20" aria-hidden="true"><use href="#i-right"/></svg></button>
+</nav>
+
+<aside class="drawer" id="drawer" aria-label="Facilitator notes">
+ <p class="eyebrow">For the grown-up at the front</p>
+ <h2>Running &ldquo;Pass the Spark&rdquo;</h2>
+ <p class="small">45 minutes &middot; Grade 4 &middot; One screen, one clicker, no printing needed.</p>
+
+ <h3>The one idea</h3>
+ <p>Guiding someone else is not a building you go to or a job title you get at 25. It is something humans have done around fires, in kitchens, on sidelines and on screens for thirty thousand years &mdash; and these nine-year-olds are already doing it. The word &ldquo;teacher&rdquo; never appears in the deck on purpose: children who think the job lives only in a classroom rule themselves out of it early.</p>
+
+ <h3>Before you start</h3>
+ <ul>
+  <li>Open on the title slide with the lights low &mdash; the deck is built for a dark room.</li>
+  <li>Have partners pre-assigned for the 30-second challenge (slide 7).</li>
+  <li>Optional: sticky notes and markers, so the wall in slide 8 also exists in the real room.</li>
+  <li>Clear the wall from the last class with the button on slide 8.</li>
+ </ul>
+
+ <h3>Minute by minute</h3>
+ <div class="plan">
+  <div class="plan-row"><span class="t">0&ndash;3</span><div><b>Open &middot; slide 1</b><span>&ldquo;Hands up if somebody showed you how to do something today.&rdquo; Wait. Every hand goes up. &ldquo;Then this whole hour is about you.&rdquo;</span></div></div>
+  <div class="plan-row"><span class="t">3&ndash;8</span><div><b>Where did it come from? &middot; slide 2</b><span>Think 20 seconds, tell a partner, then vote with the four tiles. Reveal the line at the bottom only after every tile has been tapped at least once.</span></div></div>
+  <div class="plan-row"><span class="t">8&ndash;16</span><div><b>Spot the guide &middot; slide 3</b><span>Pairs guess out loud who the guide is <em>before</em> you flip each card. Collect the six role words &mdash; Cook, Older Kid, Grower, Guide, Creator, Coach &mdash; on the board as you go.</span></div></div>
+  <div class="plan-row"><span class="t">16&ndash;24</span><div><b>Across time &middot; slide 4</b><span>Give each era to a different volunteer to read aloud. Key question between eras: &ldquo;What changed? What stayed exactly the same?&rdquo;</span></div></div>
+  <div class="plan-row"><span class="t">24&ndash;29</span><div><b>Which one helps? &middot; slide 5</b><span>Vote by hands first, then tap. Push the winners: <em>why</em> is B better? Steer toward specific, try-it-yourself, and the check-back question.</span></div></div>
+  <div class="plan-row"><span class="t">29&ndash;32</span><div><b>The four moves &middot; slide 6</b><span>Say them together: Show it. Shrink it. Hand it over. Check it stuck. Leave them visible for the next activity.</span></div></div>
+  <div class="plan-row"><span class="t">32&ndash;40</span><div><b>The 30-second pass &middot; slide 7</b><span>Spin a topic. Partner A guides for 30 seconds, then swap. Debrief with one question only: &ldquo;Which of the four moves did your partner use on you?&rdquo;</span></div></div>
+  <div class="plan-row"><span class="t">40&ndash;44</span><div><b>The wall &middot; slide 8</b><span>Each child says their sentence aloud; type them in as they go, or hand over the keyboard. Read the finished wall back to the room.</span></div></div>
+  <div class="plan-row"><span class="t">44&ndash;45</span><div><b>Close &middot; slide 9</b><span>Let the sparks light one by one in silence. Last line, then out. Resist explaining it.</span></div></div>
+ </div>
+
+ <h3>Questions worth asking</h3>
+ <ul>
+  <li>&ldquo;Who taught the person who taught you?&rdquo; (Follow the chain back as far as the room can go.)</li>
+  <li>&ldquo;Has anyone here ever learned something from someone younger than them?&rdquo;</li>
+  <li>&ldquo;What is something you know that almost nobody else in this room knows?&rdquo;</li>
+  <li>&ldquo;What is the hardest part of explaining something to someone who doesn't get it yet?&rdquo;</li>
+ </ul>
+
+ <h3>If you have more or less time</h3>
+ <ul>
+  <li><b>Short on time:</b> cut slides 4 and 6; keep the 30-second pass, it does the most work.</li>
+  <li><b>Extra time:</b> after slide 7, run a second round where partners guide someone <em>new</em> &mdash; the second telling is always better, and naming why is the whole lesson.</li>
+  <li><b>Follow-up week:</b> each child prepares a two-minute &ldquo;pass it on&rdquo; for a younger class. Real audience, real stakes.</li>
+ </ul>
+
+ <h3>Watching for learning</h3>
+ <ul>
+  <li>During slide 3, does the child name a role without being prompted with the word?</li>
+  <li>During the 30-second pass, do they break the skill into steps unprompted (Move 02)?</li>
+  <li>Do they check back &mdash; &ldquo;got it?&rdquo;, &ldquo;you try&rdquo; &mdash; without you asking them to?</li>
+  <li>Exit line: their sentence on the wall is the evidence. Screenshot it.</li>
+ </ul>
+
+ <h3>Being careful</h3>
+ <p>Some children in the room may not have an adult at home who shows them things. Slide 2 deliberately offers four sources, and any one of them is a full answer &mdash; never push a child toward the &ldquo;home&rdquo; tile.</p>
+
+ <h3>Driving the deck</h3>
+ <p class="small"><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> move &middot; <span class="kbd">Space</span> next &middot; <span class="kbd">Esc</span> closes this panel &middot; dots at the bottom jump to any slide &middot; the wall saves in this browser only.</p>
+ <p style="margin-top:24px"><button class="btn ghost" id="closeDrawer">Close notes</button></p>
+</aside>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------------- ambient embers ---------------- */
+  var cv = document.getElementById("embers"), cx = cv.getContext("2d"), parts = [], W = 0, H = 0;
+  function sizeCanvas(){
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function seed(){
+    parts = [];
+    var n = Math.round(Math.min(90, Math.max(28, W / 16)));
+    for (var i = 0; i < n; i++) parts.push(mk(true));
+  }
+  function mk(anywhere){
+    return {
+      x: Math.random() * W,
+      y: anywhere ? Math.random() * H : H + 12,
+      r: 0.6 + Math.random() * 2.1,
+      vy: 0.16 + Math.random() * 0.55,
+      drift: (Math.random() - 0.5) * 0.35,
+      a: 0.18 + Math.random() * 0.55,
+      hue: Math.random() < 0.16 ? 168 : 24 + Math.random() * 20,
+      t: Math.random() * 6.28
+    };
+  }
+  function frame(){
+    cx.clearRect(0, 0, W, H);
+    for (var i = 0; i < parts.length; i++){
+      var p = parts[i];
+      p.y -= p.vy; p.t += 0.02; p.x += p.drift + Math.sin(p.t) * 0.22;
+      if (p.y < -14) parts[i] = mk(false);
+      var fade = p.y < H * 0.3 ? Math.max(0, p.y / (H * 0.3)) : 1;
+      cx.beginPath();
+      cx.fillStyle = "hsla(" + p.hue + ",95%,66%," + (p.a * fade) + ")";
+      cx.shadowBlur = 12; cx.shadowColor = "hsla(" + p.hue + ",95%,60%,.85)";
+      cx.arc(p.x, p.y, p.r, 0, 6.2832); cx.fill();
+    }
+    cx.shadowBlur = 0;
+    requestAnimationFrame(frame);
+  }
+  sizeCanvas(); seed();
+  if (reduce){ frame_once(); } else { requestAnimationFrame(frame); }
+  function frame_once(){
+    for (var i = 0; i < parts.length; i++){
+      var p = parts[i];
+      cx.beginPath();
+      cx.fillStyle = "hsla(" + p.hue + ",95%,66%," + (p.a * 0.7) + ")";
+      cx.arc(p.x, p.y, p.r, 0, 6.2832); cx.fill();
+    }
+  }
+  var rt;
+  window.addEventListener("resize", function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ sizeCanvas(); seed(); if (reduce){ cx.clearRect(0,0,W,H); frame_once(); } }, 160);
+  });
+
+  /* ---------------- slide engine ---------------- */
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var dots = document.getElementById("dots");
+  var counter = document.getElementById("counter");
+  var prevB = document.getElementById("prev"), nextB = document.getElementById("next");
+  var i = 0;
+
+  slides.forEach(function(s, n){
+    var b = document.createElement("button");
+    b.className = "dot";
+    b.type = "button";
+    b.setAttribute("aria-label", "Slide " + (n + 1) + ": " + s.dataset.title);
+    b.addEventListener("click", function(){ show(n); });
+    dots.appendChild(b);
+  });
+  var dotEls = Array.prototype.slice.call(dots.children);
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function show(n){
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides[i].classList.remove("active");
+    i = n;
+    slides[i].classList.add("active");
+    slides[i].scrollTop = 0;
+    dotEls.forEach(function(d, k){
+      d.classList.toggle("on", k === i);
+      d.classList.toggle("done", k < i);
+    });
+    counter.textContent = pad(i + 1) + " / " + pad(slides.length);
+    prevB.disabled = i === 0;
+    nextB.disabled = i === slides.length - 1;
+    if (i === 6) resetTimer();
+    try { history.replaceState(null, "", "#s" + (i + 1)); } catch (e){}
+  }
+  function fromHash(){
+    var m = /^#s(\d+)$/.exec(window.location.hash || "");
+    return m ? parseInt(m[1], 10) - 1 : 0;
+  }
+  nextB.addEventListener("click", function(){ show(i + 1); });
+  prevB.addEventListener("click", function(){ show(i - 1); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-next]"), function(b){
+    b.addEventListener("click", function(){ show(i + 1); });
+  });
+  document.addEventListener("keydown", function(e){
+    if (document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      if (e.key === "Escape") closeDrawer();
+      return;
+    }
+    if (e.key === "ArrowRight" || e.key === "PageDown"){ show(i + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp"){ show(i - 1); }
+    else if (e.key === " "){ e.preventDefault(); show(i + 1); }
+    else if (e.key === "Escape"){ closeDrawer(); }
+  });
+  var tsx = null, tsy = null;
+  document.addEventListener("touchstart", function(e){ tsx = e.touches[0].clientX; tsy = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener("touchend", function(e){
+    if (tsx === null) return;
+    var dx = e.changedTouches[0].clientX - tsx, dy = e.changedTouches[0].clientY - tsy;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) show(i + (dx < 0 ? 1 : -1));
+    tsx = null;
+  }, {passive:true});
+  show(fromHash());
+
+  /* ---------------- slide 2: where did it come from ---------------- */
+  var q1 = document.getElementById("q1"), q1out = document.getElementById("q1out"), tapped = 0;
+  Array.prototype.forEach.call(q1.querySelectorAll(".tile"), function(t){
+    t.addEventListener("click", function(){
+      var on = t.getAttribute("aria-pressed") === "true";
+      t.setAttribute("aria-pressed", on ? "false" : "true");
+      if (!on && !t.dataset.seen){ t.dataset.seen = "1"; tapped++; }
+      if (tapped >= 3) q1out.classList.remove("hidden");
+    });
+  });
+
+  /* ---------------- slide 3: flip cards ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".flip"), function(f){
+    f.addEventListener("click", function(){
+      f.setAttribute("aria-pressed", f.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    });
+  });
+
+  /* ---------------- slide 4: timeline ---------------- */
+  var ERAS = [
+    { icon:"#i-flame", light:"Light source · a fire",
+      title:"A cave wall and a circle of faces",
+      text:"Long before writing existed, the oldest member of the group drew the hunt on the wall and told it again, and again, until the youngest could tell it back perfectly. Getting it wrong could cost everyone dinner.",
+      word:"They were called: the Elder" },
+    { icon:"#i-tablet", light:"Light source · the sun",
+      title:"Wet clay in Mesopotamia",
+      text:"In one of the first schools on Earth, students pressed marks into soft clay with a reed. Archaeologists have dug up their homework — including tablets where an older student corrected a younger one's wobbly lines.",
+      word:"They were called: the Scribe" },
+    { icon:"#i-tree", light:"Light source · shade under a tree",
+      title:"A circle in the shade, in India and in Greece",
+      text:"No building, no desks. Students sat around one person under a big tree and the whole lesson was questions — hundreds of them, back and forth, until the answer came out of the students themselves.",
+      word:"They were called: the Guru" },
+    { icon:"#i-hammer", light:"Light source · an oil lamp",
+      title:"A workshop that smells of hot metal",
+      text:"A child of eleven moved in with a shoemaker or a blacksmith and learned by standing beside them for seven years. Nobody explained anything on a board. You watched, you swept up, then one day you were handed the hammer.",
+      word:"They were called: the Master" },
+    { icon:"#i-school", light:"Light source · one window",
+      title:"One room, eight ages, one stove",
+      text:"On the prairies, six-year-olds and fourteen-year-olds shared a single room. There were too many children for one adult, so the older students were given the younger ones to guide — an actual job, with an actual title.",
+      word:"They were called: the Monitor" },
+    { icon:"#i-screen", light:"Light source · a glowing screen",
+      title:"A phone propped against a cereal box",
+      text:"Someone barely older than you films ninety seconds on a kitchen table — and a kid on the other side of the planet learns the trick tonight. The circle around the fire is now the size of the Earth.",
+      word:"They are called: the Creator" }
+  ];
+  var eraBtns = Array.prototype.slice.call(document.querySelectorAll("#eras .era"));
+  var eraIcon = document.getElementById("eraIcon"),
+      eraLight = document.getElementById("eraLight"),
+      eraTitle = document.getElementById("eraTitle"),
+      eraText = document.getElementById("eraText"),
+      eraWord = document.getElementById("eraWord"),
+      eraPanel = document.getElementById("eraPanel");
+  eraBtns.forEach(function(b, n){
+    b.addEventListener("click", function(){
+      eraBtns.forEach(function(o, k){ o.setAttribute("aria-pressed", k === n ? "true" : "false"); });
+      var e = ERAS[n];
+      eraIcon.setAttribute("href", e.icon);
+      eraLight.textContent = e.light;
+      eraTitle.textContent = e.title;
+      eraText.textContent = e.text;
+      eraWord.textContent = e.word;
+      eraPanel.style.animation = "none";
+      void eraPanel.offsetWidth;
+      if (!reduce) eraPanel.style.animation = "rise .45s cubic-bezier(.2,.7,.3,1) both";
+    });
+  });
+
+  /* ---------------- slide 5: quiz ---------------- */
+  var quiz = document.getElementById("quiz"), quizOut = document.getElementById("quizOut");
+  Array.prototype.forEach.call(quiz.querySelectorAll(".opt"), function(o){
+    o.addEventListener("click", function(){
+      var good = o.dataset.good === "true";
+      Array.prototype.forEach.call(quiz.querySelectorAll(".opt"), function(x){
+        x.classList.remove("right", "wrong");
+        x.classList.add(x.dataset.good === "true" ? "right" : "wrong");
+      });
+      quizOut.classList.remove("hidden", "good", "soft");
+      quizOut.classList.add(good ? "good" : "soft");
+      quizOut.innerHTML = good
+        ? "<p class=\"lead\" style=\"max-width:70ch\">Helper B, every time. Look at what B actually did: gave one <b>exact</b> thing to change, put the plane in their friend's hands, and then asked <b>&ldquo;what did it do?&rdquo;</b> &mdash; so they'd find the next fix themselves.</p>"
+        : "<p class=\"lead\" style=\"max-width:70ch\">Not quite. <b>&ldquo;Better&rdquo;</b> and <b>&ldquo;harder&rdquo;</b> don't tell you what to <em>do</em> with your hands &mdash; and &ldquo;it's easy&rdquo; just makes you feel worse for not getting it. Look at Helper B again.</p>";
+    });
+  });
+
+  /* ---------------- slide 7: spin + timer ---------------- */
+  var TOPICS = [
+    "How to tie a knot that actually holds",
+    "How to say hello in another language",
+    "How to draw a cube that looks 3D",
+    "The fastest way to tidy a desk",
+    "A card trick, or how to shuffle",
+    "How to remember all eight planets",
+    "How to whistle — or how to try",
+    "The rules of your favourite game, in 30 seconds",
+    "How to fold a paper plane that flies",
+    "How to make a really good sandwich"
+  ];
+  var topicEl = document.getElementById("topic"), topicText = document.getElementById("topicText"), lastTopic = -1;
+  document.getElementById("spin").addEventListener("click", function(){
+    var n; do { n = Math.floor(Math.random() * TOPICS.length); } while (n === lastTopic && TOPICS.length > 1);
+    lastTopic = n;
+    topicEl.style.animation = "none"; void topicEl.offsetWidth;
+    topicText.textContent = TOPICS[n];
+    if (!reduce) topicEl.style.animation = "pop .4s cubic-bezier(.2,1.4,.4,1) both";
+  });
+
+  var C = 326.7, left = 30, tick = null;
+  var prog = document.getElementById("prog"), read = document.getElementById("read"), go = document.getElementById("go");
+  function paint(){
+    read.textContent = left;
+    prog.style.strokeDashoffset = C * (1 - left / 30);
+    prog.style.stroke = left <= 5 ? "var(--coral)" : (left <= 12 ? "var(--flame)" : "var(--ember)");
+  }
+  function resetTimer(){ clearInterval(tick); tick = null; left = 30; paint(); go.textContent = "Start 30 seconds"; }
+  go.addEventListener("click", function(){
+    if (tick){ resetTimer(); return; }
+    if (left === 0) left = 30;
+    go.textContent = "Stop / reset";
+    tick = setInterval(function(){
+      left--; paint();
+      if (left <= 0){
+        clearInterval(tick); tick = null;
+        go.textContent = "Go again";
+        read.textContent = "Swap!";
+      }
+    }, 1000);
+  });
+  paint();
+
+  /* ---------------- slide 8: the wall ---------------- */
+  var KEY = "pass-the-spark-wall-v1";
+  var wall = document.getElementById("wall"), form = document.getElementById("wallForm"), input = document.getElementById("wallInput");
+  var COLORS = ["var(--flame)", "var(--glow)", "var(--ember)", "var(--coral)"];
+  function load(){ try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e){ return []; } }
+  function save(list){ try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e){} }
+  function render(){
+    var list = load();
+    wall.innerHTML = "";
+    if (!list.length){
+      var p = document.createElement("p");
+      p.className = "empty-wall";
+      p.textContent = "The wall is empty. Somebody go first.";
+      wall.appendChild(p);
+      return;
+    }
+    list.forEach(function(txt, n){
+      var d = document.createElement("div");
+      d.className = "note";
+      d.style.background = COLORS[n % COLORS.length];
+      d.style.transform = "rotate(" + (((n * 7919) % 9) - 4) + "deg)";
+      d.style.animationDelay = Math.min(n * 45, 600) + "ms";
+      var s = document.createElement("small");
+      s.textContent = "I could show someone how to";
+      d.appendChild(s);
+      d.appendChild(document.createTextNode(txt));
+      wall.appendChild(d);
+    });
+  }
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = input.value.trim();
+    if (!v) return;
+    var list = load();
+    list.push(v);
+    save(list);
+    input.value = "";
+    render();
+    input.focus();
+  });
+  document.getElementById("clearWall").addEventListener("click", function(){
+    save([]); render();
+  });
+  render();
+
+  /* ---------------- drawer ---------------- */
+  var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), notesBtn = document.getElementById("notesBtn");
+  function openDrawer(){ drawer.classList.add("open"); scrim.classList.add("on"); notesBtn.setAttribute("aria-expanded", "true"); }
+  function closeDrawer(){ drawer.classList.remove("open"); scrim.classList.remove("on"); notesBtn.setAttribute("aria-expanded", "false"); }
+  notesBtn.addEventListener("click", function(){ drawer.classList.contains("open") ? closeDrawer() : openDrawer(); });
+  scrim.addEventListener("click", closeDrawer);
+  document.getElementById("closeDrawer").addEventListener("click", closeDrawer);
+
+  document.getElementById("restart").addEventListener("click", function(){ show(0); });
+})();
+</script>
+</body>
+</html>
